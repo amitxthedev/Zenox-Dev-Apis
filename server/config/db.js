@@ -8,14 +8,19 @@ const serviceKey = process.env.SUPABASE_SERVICE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 const supabaseAdmin = createClient(supabaseUrl, serviceKey);
 
-const dbConnectionString = process.env.DATABASE_URL || process.env.DB_CONNECTION_STRING;
-console.log('Using DB connection string');
-console.log('Supabase URL:', supabaseUrl);
+let pool = null;
 
-const pool = new Pool({
-  connectionString: dbConnectionString,
-  ssl: { rejectUnauthorized: false }
-});
+if (process.env.DB_CONNECTION_STRING) {
+  pool = new Pool({
+    connectionString: process.env.DB_CONNECTION_STRING,
+    ssl: { rejectUnauthorized: false }
+  });
+} else {
+  pool = new Pool({
+    connectionString: `postgresql://postgres:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:5432/postgres`,
+    ssl: { rejectUnauthorized: false }
+  });
+}
 
 const promisePool = pool;
 
