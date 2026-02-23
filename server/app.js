@@ -18,17 +18,12 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Something went wrong!' });
 });
 
-console.log('__dirname:', __dirname);
-console.log('process.cwd():', process.cwd());
-console.log('Files in __dirname:', fs.readdirSync(__dirname));
-
-const clientPath = path.join(__dirname, 'dist');
-console.log('Looking for dist at:', clientPath);
-console.log('dist exists:', fs.existsSync(clientPath));
+const repoRoot = path.join(__dirname, '..');
+const clientPath = path.join(repoRoot, 'dist');
+console.log('Static files path:', clientPath, 'exists:', fs.existsSync(clientPath));
 
 if (fs.existsSync(clientPath)) {
   app.use(express.static(clientPath));
-  
   app.get('*', (req, res) => {
     res.sendFile(path.join(clientPath, 'index.html'));
   });
