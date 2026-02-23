@@ -18,25 +18,15 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Something went wrong!' });
 });
 
-const possiblePaths = [
-  path.join(__dirname, 'dist'),
-  path.join(__dirname, '../client/dist'),
-  path.join(__dirname, '../dist'),
-  path.join(process.cwd(), 'dist'),
-  path.join(process.cwd(), '../dist'),
-  path.join(process.cwd(), '../client/dist'),
-];
+console.log('__dirname:', __dirname);
+console.log('process.cwd():', process.cwd());
+console.log('Files in __dirname:', fs.readdirSync(__dirname));
 
-let clientPath = null;
-for (const p of possiblePaths) {
-  if (fs.existsSync(p)) {
-    clientPath = p;
-    console.log('Found static files at:', clientPath);
-    break;
-  }
-}
+const clientPath = path.join(__dirname, 'dist');
+console.log('Looking for dist at:', clientPath);
+console.log('dist exists:', fs.existsSync(clientPath));
 
-if (clientPath) {
+if (fs.existsSync(clientPath)) {
   app.use(express.static(clientPath));
   
   app.get('*', (req, res) => {
