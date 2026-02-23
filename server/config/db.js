@@ -9,8 +9,10 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 const supabaseAdmin = createClient(supabaseUrl, serviceKey);
 
 const pool = new Pool({
-  connectionString: process.env.DB_CONNECTION_STRING || `postgresql://postgres:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:5432/postgres`,
-  ssl: { rejectUnauthorized: false }
+  connectionString: process.env.DB_CONNECTION_STRING,
+  ssl: { rejectUnauthorized: false },
+  idleTimeoutMillis: 10000,
+  query_timeout: 10000
 });
 
 const promisePool = pool;

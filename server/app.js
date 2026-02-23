@@ -18,14 +18,22 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Something went wrong!' });
 });
 
-const repoRoot = path.join(__dirname, '..');
-const clientPath = path.join(repoRoot, 'dist');
-console.log('Static files path:', clientPath, 'exists:', fs.existsSync(clientPath));
+const distPath = path.join(__dirname, '..', 'dist');
+const staticPath = path.join(__dirname, 'dist');
 
-if (fs.existsSync(clientPath)) {
-  app.use(express.static(clientPath));
+let servePath = null;
+
+if (fs.existsSync(staticPath)) {
+  servePath = staticPath;
+} else if (fs.existsSync(distPath)) {
+  servePath = distPath;
+}
+
+if (servePath) {
+  console.log('Serving static files from:', servePath);
+  app.use(express.static(servePath));
   app.get('*', (req, res) => {
-    res.sendFile(path.join(clientPath, 'index.html'));
+    res.sendFile(path.join(servePath, 'index.html'));
   });
 }
 
