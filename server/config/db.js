@@ -11,11 +11,14 @@ const supabaseAdmin = createClient(supabaseUrl, serviceKey);
 let pool = null;
 
 if (process.env.DB_CONNECTION_STRING) {
+  console.log('DB Connection: Using DB_CONNECTION_STRING');
+  console.log('DB String contains port 6543:', process.env.DB_CONNECTION_STRING.includes('6543'));
   pool = new Pool({
     connectionString: process.env.DB_CONNECTION_STRING,
     ssl: { rejectUnauthorized: false }
   });
 } else {
+  console.log('DB Connection: Using fallback');
   pool = new Pool({
     connectionString: `postgresql://postgres:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:5432/postgres`,
     ssl: { rejectUnauthorized: false }
