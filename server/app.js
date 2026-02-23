@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const authRoutes = require('./routes/auth');
 const leadRoutes = require('./routes/leads');
 
@@ -17,16 +18,20 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Something went wrong!' });
 });
 
-if (process.env.NODE_ENV === 'production') {
-  const clientPath = path.join(__dirname, 'dist');
+const distPath = path.join(__dirname, 'dist');
+const altDistPath = path.join(__dirname, '../server/dist');
+
+let clientPath = distPath;
+if (!fs.existsSync(distPath) && fs.existsSync(altDistPath)) {
+  clientPath = altDistPath;
+}
+
+if (fs.existsSync(clientPath)) {
+  app.use(express.static(clientPath));
   
-  if (require('fs').existsSync(clientPath)) {
-    app.use(express.static(clientPath));
-    
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(clientPath, 'index.html'));
-    });
-  }
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(clientPath, 'index.html'));
+  });
 }
 
 module.exports = app;
