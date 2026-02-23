@@ -8,13 +8,13 @@ const serviceKey = process.env.SUPABASE_SERVICE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 const supabaseAdmin = createClient(supabaseUrl, serviceKey);
 
-console.log('DB Connection String:', process.env.DB_CONNECTION_STRING ? 'SET' : 'NOT SET');
+const dbConnectionString = process.env.DATABASE_URL || process.env.DB_CONNECTION_STRING;
+console.log('Using DB connection string');
+console.log('Supabase URL:', supabaseUrl);
 
 const pool = new Pool({
-  connectionString: process.env.DB_CONNECTION_STRING,
-  ssl: { rejectUnauthorized: false },
-  idleTimeoutMillis: 10000,
-  query_timeout: 10000
+  connectionString: dbConnectionString,
+  ssl: { rejectUnauthorized: false }
 });
 
 const promisePool = pool;
