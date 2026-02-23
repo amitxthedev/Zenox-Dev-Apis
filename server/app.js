@@ -18,21 +18,28 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Something went wrong!' });
 });
 
+console.log('__dirname:', __dirname);
+console.log('Files in __dirname:', fs.readdirSync(__dirname));
+
 const possiblePaths = [
   path.join(__dirname, 'dist'),
   path.join(__dirname, '..', 'dist'),
+  path.join(__dirname, '..', '..', 'dist'),
+  path.join(process.cwd(), 'dist'),
 ];
+
+for (const p of possiblePaths) {
+  console.log('Checking:', p, 'exists:', fs.existsSync(p));
+}
 
 let servePath = possiblePaths.find(p => fs.existsSync(p));
 
 if (servePath) {
-  console.log('Static files from:', servePath);
+  console.log('Static from:', servePath);
   app.use(express.static(servePath));
   app.get('*', (req, res) => {
     res.sendFile(path.join(servePath, 'index.html'));
   });
-} else {
-  console.log('No static files found');
 }
 
 module.exports = app;
