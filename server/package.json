@@ -1,11 +1,10 @@
 {
   "name": "zenox-server",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Zenox Dashboard Backend",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "start:prod": "NODE_ENV=production node server.js",
     "dev": "node server.js"
   },
   "dependencies": {

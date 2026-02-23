@@ -8,22 +8,14 @@ const serviceKey = process.env.SUPABASE_SERVICE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 const supabaseAdmin = createClient(supabaseUrl, serviceKey);
 
-let pool = null;
+const TEST_CONNECTION = 'postgresql://postgres.zfvhbhwustttzwlgaxuo:KqNLLx1vGXhLCap2@aws-1-ap-south-1.pooler.supabase.com:6543/postgres';
 
-if (process.env.DB_CONNECTION_STRING) {
-  console.log('DB Connection: Using DB_CONNECTION_STRING');
-  console.log('DB String contains port 6543:', process.env.DB_CONNECTION_STRING.includes('6543'));
-  pool = new Pool({
-    connectionString: process.env.DB_CONNECTION_STRING,
-    ssl: { rejectUnauthorized: false }
-  });
-} else {
-  console.log('DB Connection: Using fallback');
-  pool = new Pool({
-    connectionString: `postgresql://postgres:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:5432/postgres`,
-    ssl: { rejectUnauthorized: false }
-  });
-}
+let pool = new Pool({
+  connectionString: process.env.DB_CONNECTION_STRING || TEST_CONNECTION,
+  ssl: { rejectUnauthorized: false }
+});
+
+console.log('Pool created with connection string');
 
 const promisePool = pool;
 
