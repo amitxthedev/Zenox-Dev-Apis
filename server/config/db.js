@@ -1,21 +1,9 @@
-const { createClient } = require('@supabase/supabase-js');
 const { Pool } = require('pg');
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
-const serviceKey = process.env.SUPABASE_SERVICE_KEY;
-
-const supabase = createClient(supabaseUrl, supabaseKey);
-const supabaseAdmin = createClient(supabaseUrl, serviceKey);
-
-const TEST_CONNECTION = 'postgresql://postgres.zfvhbhwustttzwlgaxuo:KqNLLx1vGXhLCap2@aws-1-ap-south-1.pooler.supabase.com:6543/postgres';
-
-let pool = new Pool({
-  connectionString: process.env.DB_CONNECTION_STRING || TEST_CONNECTION,
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL || 'postgresql://zenox:TxAIovLkqENcjcKf9mOpyiNbOd3sb2bm@dpg-d6e8sptm5p6s73fl3ii0-a.oregon-postgres.render.com/zenoxdashboard',
   ssl: { rejectUnauthorized: false }
 });
-
-console.log('Pool created with connection string');
 
 const promisePool = pool;
 
@@ -47,29 +35,25 @@ const initDatabase = async () => {
       )
     `);
 
-    const { data: users } = await supabaseAdmin
-      .from('users')
-      .select('*')
-      .eq('email', process.env.ADMIN_EMAIL);
-
-    if (!users || users.length === 0) {
-      const bcrypt = require('bcryptjs');
-      const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD, 10);
-      
-      const { error } = await supabaseAdmin
-        .from('users')
-        .insert([
-          { name: 'Admin', email: process.env.ADMIN_EMAIL, password: hashedPassword, role: 'admin' }
-        ]);
-
-      if (error) throw error;
-      console.log(`Default admin user created: ${process.env.ADMIN_EMAIL} / ${process.env.ADMIN_PASSWORD}`);
+    const bcrypt = require('bcryptjs');
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@zenox.com';
+    const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+    
+    const existingUsers = await pool.query('SELECT * FROM users WHERE email = $1', [adminEmail]);
+    
+    if (existingUsers.rows.length === 0) {
+      const hashedPassword = await bcrypt.hash(adminPassword, 10);
+      await pool.query(
+        'INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4)',
+        ['Admin', adminEmail, hashedPassword, 'admin']
+      );
+      console.log(`Default admin user created: ${adminEmail} / ${adminPassword}`);
     }
 
     console.log('Database initialized successfully');
   } catch (error) {
-    console.error('Database initialization error:', error);
+    console.error('Database initialization error:', error.message);
   }
 };
 
-module.exports = { supabase, supabaseAdmin, pool, promisePool, initDatabase };
+module.exports = { pool, promisePool, initDatabase };
