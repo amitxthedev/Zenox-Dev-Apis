@@ -8,6 +8,8 @@ const serviceKey = process.env.SUPABASE_SERVICE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 const supabaseAdmin = createClient(supabaseUrl, serviceKey);
 
+console.log('DB Connection String:', process.env.DB_CONNECTION_STRING ? 'SET' : 'NOT SET');
+
 const pool = new Pool({
   connectionString: process.env.DB_CONNECTION_STRING,
   ssl: { rejectUnauthorized: false },
