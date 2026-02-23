@@ -1,8 +1,8 @@
 const { Pool } = require('pg');
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://zenox:TxAIovLkqENcjcKf9mOpyiNbOd3sb2bm@dpg-d6e8sptm5p6s73fl3ii0-a.oregon-postgres.render.com/zenoxdashboard',
-  ssl: { rejectUnauthorized: false }
+  connectionString: process.env.DATABASE_URL || 'postgresql://zenox:TxAIovLkqENcjcKf9mOpyiNbOd3sb2bm@dpg-d6e8sptm5p6s73fl3ii0-a/zenoxdashboard',
+  ssl: false
 });
 
 const promisePool = pool;
